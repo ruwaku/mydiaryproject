@@ -16,7 +16,7 @@ export default function MyPage() {
           로그아웃
         </Button>
       ) : (
-        "미로그인"
+        <LoginFallback />
       )}
     </div>
   );

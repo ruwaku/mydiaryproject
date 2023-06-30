@@ -11,6 +11,7 @@ import "./App.css";
 import KakaoLoginCallback from "components/OAuth/KakaoLoginCallback/KakaoLoginCallback";
 import { AuthSessionProvider } from "components/AuthSessionProvider/AuthSessionProvider";
 import MyPage from "pages/MyPage/MyPage";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const router = createBrowserRouter([
   {
@@ -39,12 +40,15 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const queryClient = new QueryClient();
   return (
-    <AntdProvider>
-      <AuthSessionProvider>
-        <RouterProvider router={router} />
-      </AuthSessionProvider>
-    </AntdProvider>
+    <QueryClientProvider client={queryClient}>
+      <AntdProvider>
+        <AuthSessionProvider>
+          <RouterProvider router={router} />
+        </AuthSessionProvider>
+      </AntdProvider>
+    </QueryClientProvider>
   );
 }
 
