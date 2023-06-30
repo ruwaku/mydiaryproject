@@ -1,6 +1,6 @@
 import Button from "antd/es/button";
 import LoginFallback from "components/LoginFallback/LoginFallback";
-import fbAuthClient from "lib/firebase";
+import { fbAuthClient } from "lib/firebase";
 import useAuthSession from "hooks/useAuthSession";
 
 export default function MyPage() {

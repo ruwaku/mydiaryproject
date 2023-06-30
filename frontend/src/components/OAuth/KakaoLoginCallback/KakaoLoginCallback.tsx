@@ -3,7 +3,7 @@ import Result from "antd/es/result";
 import Spin from "antd/es/spin";
 import FlexBox from "components/FlexBox/FlexBox";
 import { browserLocalPersistence, setPersistence, signInWithCustomToken } from "firebase/auth";
-import fbAuthClient from "lib/firebase";
+import { fbAuthClient } from "lib/firebase";
 import useCookieValue from "hooks/useCookieValue";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";

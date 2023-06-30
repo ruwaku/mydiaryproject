@@ -1,6 +1,6 @@
 import { createContext } from "react";
 import { useEffect, useState } from "react";
-import fbAuthClient from "lib/firebase";
+import { fbAuthClient } from "lib/firebase";
 import { AuthSession } from "types/auth";
 
 const defaultValue: AuthSession = { status: "pending" };
@@ -10,7 +10,7 @@ export function AuthSessionProvider({ children }: React.PropsWithChildren) {
   const [authSession, setAuthSession] = useState<AuthSession>(defaultValue);
   useEffect(() => {
     fbAuthClient.onAuthStateChanged((currentUser) => {
-      console.log("change:", currentUser);
+      console.log("authState:", currentUser);
       if (currentUser) {
         setAuthSession({ status: "authenticated", current: currentUser });
       } else {

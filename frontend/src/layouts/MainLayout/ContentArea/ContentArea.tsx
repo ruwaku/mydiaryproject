@@ -8,7 +8,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function ContentArea({ children }: React.PropsWithChildren) {
   const antd = theme.useToken();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const breadcrumbItems: ItemType[] =
     pathname === "/"
       ? []
@@ -19,7 +19,7 @@ export default function ContentArea({ children }: React.PropsWithChildren) {
             .slice(1)
             .map((pathSlice, i) => ({
               key: pathSlice,
-              href: pathname
+              href: (pathname + search)
                 .split("/")
                 .slice(0, i + 2)
                 .join("/"),
