@@ -1,8 +1,9 @@
 import "antd/dist/reset.css";
 import AntdProvider from "components/AntdProvider/AntdProvider";
 import { AuthSessionProvider } from "components/AuthSessionProvider/AuthSessionProvider";
+import MainLayout from "components/MainLayout/MainLayout";
 import KakaoLoginCallback from "components/OAuth/KakaoLoginCallback/KakaoLoginCallback";
-import MainLayout from "layouts/MainLayout/MainLayout";
+import WithAuthSession from "components/WithAuthSession/WithAuthSession";
 import AboutPage from "pages/AboutPage/AboutPage";
 import HomePage from "pages/HomePage/HomePage";
 import MyPage from "pages/MyPage/MyPage";
@@ -11,9 +12,9 @@ import StoryEditorPage from "pages/StoryEditorPage/StoryEditorPage";
 import StoryListPage from "pages/StoryListPage/StoryListPage";
 import StoryViewerPage from "pages/StoryViewerPage/StoryViewerPage";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import "./App.css";
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
 import { RecoilRoot } from "recoil";
+import "./App.css";
 
 const router = createBrowserRouter([
   {
@@ -23,17 +24,22 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainLayout />,
     children: [
-      { index: true, element: <HomePage /> },
       {
-        path: "story",
+        element: <WithAuthSession element={<Outlet />} />,
         children: [
-          { index: true, element: <StoryListPage /> },
-          { path: "editor", element: <StoryEditorPage /> },
-          { path: ":storyId", element: <StoryViewerPage /> },
+          { index: true, element: <HomePage /> },
+          {
+            path: "story",
+            children: [
+              { index: true, element: <StoryListPage /> },
+              { path: "editor", element: <StoryEditorPage /> },
+              { path: ":storyId", element: <StoryViewerPage /> },
+            ],
+          },
+          { path: "me", element: <MyPage /> },
         ],
       },
       { path: "about", element: <AboutPage /> },
-      { path: "me", element: <MyPage /> },
     ],
   },
   {

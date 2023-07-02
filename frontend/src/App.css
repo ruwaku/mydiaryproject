@@ -45,27 +45,23 @@ i[class*="ri-"] + span {
   min-height: 100%;
   height: 0;
 }
-/* tui color picker */
-#__next .toastui-editor-popup-body input[type="text"].tui-colorpicker-palette-hex {
-  width: 100px;
-  height: 30px;
+.ant-picker-panels > *:first-child button.ant-picker-header-next-btn {
+  visibility: visible !important;
 }
-#__next .toastui-editor-popup-color button {
-  height: 30px;
+
+.ant-picker-panels > *:first-child button.ant-picker-header-super-next-btn {
+  visibility: visible !important;
 }
-#__next .toastui-editor-dropdown-toolbar {
-  max-width: 100%;
-  flex-wrap: wrap;
-  height: auto;
+
+.ant-picker-panels > *:last-child:not(:first-child) {
+  display: none;
 }
-#__next .toastui-editor-mode-switch {
-  height: 45px;
+
+.ant-picker-panel-container,
+.ant-picker-footer {
+  width: 280px !important;
 }
-#__next .toastui-editor-mode-switch .tab-item {
-  height: 34px;
-  line-height: 34px;
-}
-/* antd */
-.ant-menu-item-selected {
-  font-weight: bold;
+
+.ant-picker-footer-extra > div {
+  flex-wrap: wrap !important;
 }
