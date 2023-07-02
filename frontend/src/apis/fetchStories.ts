@@ -9,8 +9,9 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { fbAuthClient, fbFirestoreClient } from "..";
+import { fbAuthClient, fbFirestoreClient } from "../lib/firebase";
 import { StoryData } from "types/story";
+import { ApiError } from "types/error";
 dayjs.extend(utc);
 
 type DateOrder = "최신순" | "오래된순";
@@ -30,7 +31,7 @@ export interface StoryListFilter {
  */
 export default async function fetchStories(filter: StoryListFilter): Promise<StoryData[]> {
   const user = fbAuthClient.currentUser;
-  if (!user) throw user;
+  if (!user) throw new ApiError("AUTH_NOT_LOGGED_IN");
 
   const filterQueries: QueryConstraint[] = [];
 

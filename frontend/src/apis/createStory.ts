@@ -1,6 +1,7 @@
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { fbAuthClient, fbFirestoreClient } from "..";
+import { fbAuthClient, fbFirestoreClient } from "../lib/firebase";
 import { StoryData } from "types/story";
+import { ApiError } from "types/error";
 
 interface Props {
   title: StoryData["title"];
@@ -12,7 +13,7 @@ interface Props {
  */
 export default async function createStory({ title, contentHTML }: Props) {
   const user = fbAuthClient.currentUser;
-  if (!user) throw user;
+  if (!user) throw new ApiError("AUTH_NOT_LOGGED_IN");
   const currentDate = serverTimestamp();
   const result = await addDoc(collection(fbFirestoreClient, `/users/${user.uid}/stories`), {
     title,
