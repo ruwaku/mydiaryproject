@@ -16,15 +16,14 @@ import { useNavigate } from "react-router-dom";
 interface Props {
   originalStoryId?: string;
 }
-
 export default function StoryEditor({ originalStoryId }: Props) {
   const navigate = useNavigate();
   const isEditMode = Boolean(originalStoryId);
-  const [canLeave, setCanLeave] = useState(true);
+  const [canLeave, setCanLeave] = useState(false);
   const [storyTitle, setStoryTitle] = useState<string>();
   const [defaultHTML, setDefaultHTML] = useState<string>();
-  const editStoryMutation = useMutation(editStory);
-  const createStoryMutation = useMutation(createStory);
+  const editStoryMutation = useMutation("story", editStory);
+  const createStoryMutation = useMutation("story", createStory);
   const isMutating = useIsMutating(["story"]);
   const originalStoryQuery = useQuery(
     ["story", originalStoryId],
@@ -33,9 +32,9 @@ export default function StoryEditor({ originalStoryId }: Props) {
       refetchOnWindowFocus: false,
       enabled: isEditMode,
       onSuccess: (data) => {
-        if (data?.exists()) {
+        if (data) {
           setCanLeave(false);
-          const { title, contentHTML } = data?.data();
+          const { title, contentHTML } = data;
           setStoryTitle(title);
           setDefaultHTML(contentHTML);
         }
@@ -65,7 +64,7 @@ export default function StoryEditor({ originalStoryId }: Props) {
           {
             onSuccess: () => {
               setCanLeave(true);
-              setTimeout(() => navigate(`/story/${originalStoryId}`), 100);
+              setTimeout(() => navigate(`/story/${originalStoryId}`), 50);
             },
           }
         );
@@ -75,7 +74,7 @@ export default function StoryEditor({ originalStoryId }: Props) {
           {
             onSuccess: (newStoryId) => {
               setCanLeave(true);
-              setTimeout(() => navigate(`/story/${newStoryId}`), 100);
+              setTimeout(() => navigate(`/story/${newStoryId}`), 50);
             },
           }
         );
@@ -88,7 +87,7 @@ export default function StoryEditor({ originalStoryId }: Props) {
         <Spin />
       </FlexBox>
     );
-  if (originalStoryQuery.data?.exists() || !isEditMode) {
+  if (originalStoryQuery.data || !isEditMode) {
     return (
       <Space direction="vertical" style={{ width: "100%" }}>
         <FlexBox gap={10}>

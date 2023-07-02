@@ -1,17 +1,19 @@
+import "antd/dist/reset.css";
 import AntdProvider from "components/AntdProvider/AntdProvider";
+import { AuthSessionProvider } from "components/AuthSessionProvider/AuthSessionProvider";
+import KakaoLoginCallback from "components/OAuth/KakaoLoginCallback/KakaoLoginCallback";
 import MainLayout from "layouts/MainLayout/MainLayout";
 import AboutPage from "pages/AboutPage/AboutPage";
 import HomePage from "pages/HomePage/HomePage";
+import MyPage from "pages/MyPage/MyPage";
 import NoMatch from "pages/NoMatch/NoMatch";
 import StoryEditorPage from "pages/StoryEditorPage/StoryEditorPage";
 import StoryListPage from "pages/StoryListPage/StoryListPage";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import "antd/dist/reset.css";
-import "./App.css";
-import KakaoLoginCallback from "components/OAuth/KakaoLoginCallback/KakaoLoginCallback";
-import { AuthSessionProvider } from "components/AuthSessionProvider/AuthSessionProvider";
-import MyPage from "pages/MyPage/MyPage";
+import StoryViewerPage from "pages/StoryViewerPage/StoryViewerPage";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import "./App.css";
+import { RecoilRoot } from "recoil";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <StoryListPage /> },
           { path: "editor", element: <StoryEditorPage /> },
+          { path: ":storyId", element: <StoryViewerPage /> },
         ],
       },
       { path: "about", element: <AboutPage /> },
@@ -42,13 +45,15 @@ const router = createBrowserRouter([
 function App() {
   const queryClient = new QueryClient();
   return (
-    <QueryClientProvider client={queryClient}>
-      <AntdProvider>
-        <AuthSessionProvider>
-          <RouterProvider router={router} />
-        </AuthSessionProvider>
-      </AntdProvider>
-    </QueryClientProvider>
+    <RecoilRoot>
+      <QueryClientProvider client={queryClient}>
+        <AntdProvider>
+          <AuthSessionProvider>
+            <RouterProvider router={router} />
+          </AuthSessionProvider>
+        </AntdProvider>
+      </QueryClientProvider>
+    </RecoilRoot>
   );
 }
 

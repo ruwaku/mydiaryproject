@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/ko";
 dayjs.locale("ko");
 
 interface Props {
-  date?: Date;
-  format: string;
-  interval: number;
+  date: Dayjs;
+  format?: string;
+  interval?: number;
 }
-export default function Clock({ date, format, interval }: Props) {
-  const initialTime = useRef<dayjs.Dayjs>(dayjs(date ?? new Date()));
+export default function Clock({ date, format = "YYYY-MM-DD(dd) HH:mm:ss", interval }: Props) {
+  const initialTime = useRef<Dayjs>(date);
   const [elapsedTime, setElapsedTime] = useState(0);
   useEffect(() => {
     if (interval) {

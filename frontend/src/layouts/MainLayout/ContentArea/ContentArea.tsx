@@ -52,6 +52,7 @@ export default function ContentArea({ children }: React.PropsWithChildren) {
         )}
         <div
           style={{
+            position: "relative",
             padding: "1.75rem 1.5rem",
             background: antd.token.colorBgContainer,
             width: "100%",
