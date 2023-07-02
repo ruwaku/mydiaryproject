@@ -8,7 +8,13 @@ import { ApiJSON } from "types/app";
 
 const ApiController = Router();
 
-const { KAKAO_CLIENT_ID, KAKAO_AUTH_REDIRECT_PATH, BACKEND_HOST, FRONTEND_HOST } = process.env;
+const {
+  KAKAO_CLIENT_ID,
+  KAKAO_AUTH_REDIRECT_PATH,
+  KAKAO_AUTH_COMPLETE_REDIRECT_PATH,
+  BACKEND_HOST,
+  FRONTEND_HOST,
+} = process.env;
 const url = new URL("https://kauth.kakao.com/oauth/authorize");
 url.searchParams.append("response_type", "code");
 url.searchParams.append("client_id", `${KAKAO_CLIENT_ID}`);
@@ -34,7 +40,7 @@ ApiController.get("/oauth/kakao/callback", async (req, res: Response<ApiJSON>, n
       path: "/",
       sameSite: "lax",
     });
-    res.redirect(`${FRONTEND_HOST}/login`);
+    res.redirect(`${FRONTEND_HOST}${KAKAO_AUTH_COMPLETE_REDIRECT_PATH}`);
   } catch (error: any) {
     next(error);
   }

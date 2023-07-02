@@ -43,7 +43,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/login",
+    path: process.env["REACT_APP_KAKAO_AUTH_COMPLETE_REDIRECT_PATH"],
     element: <KakaoLoginCallback />,
   },
 ]);
