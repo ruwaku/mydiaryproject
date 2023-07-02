@@ -17,7 +17,7 @@ const reducer = (state: StoryListFilter, action: ReducerActions): StoryListFilte
     case "orderBy":
       return { ...state, [action.type]: action.payload };
     case "RESET":
-      return {};
+      return { orderBy: "최신순" };
     default:
       return state;
   }

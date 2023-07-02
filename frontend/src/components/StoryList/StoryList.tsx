@@ -26,7 +26,7 @@ export default function StoryList() {
           itemLayout="vertical"
           size="large"
           dataSource={data}
-          renderItem={(item) => <StoryListItem {...item} />}
+          renderItem={(story) => <StoryListItem story={story} />}
         />
       )}
     </Space>
