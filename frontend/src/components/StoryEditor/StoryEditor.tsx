@@ -1,6 +1,5 @@
 import Button from "antd/es/button";
 import Input from "antd/es/input";
-import Result from "antd/es/result";
 import Space from "antd/es/space";
 import Spin from "antd/es/spin";
 import FlexBox from "components/FlexBox/FlexBox";
@@ -8,39 +7,20 @@ import Wysiwyg, { WysiwygRef } from "components/Wysiwyg/Wysiwyg";
 import usePreventLeave from "hooks/usePreventLeave";
 import createStory from "lib/firebase/apis/createStory";
 import editStory from "lib/firebase/apis/editStory";
-import fetchStory from "lib/firebase/apis/fetchStory";
 import { useRef, useState } from "react";
-import { useMutation, useQuery, useIsMutating } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { StoryData } from "types/story";
 
 interface Props {
-  originalStoryId?: string;
+  originalStory?: StoryData;
 }
-export default function StoryEditor({ originalStoryId }: Props) {
+export default function StoryEditor({ originalStory }: Props) {
   const navigate = useNavigate();
-  const isEditMode = Boolean(originalStoryId);
+  const isEditMode = !!originalStory;
+  const defaultHTML = originalStory?.contentHTML;
   const [canLeave, setCanLeave] = useState(false);
-  const [storyTitle, setStoryTitle] = useState<string>();
-  const [defaultHTML, setDefaultHTML] = useState<string>();
-  const editStoryMutation = useMutation("story", editStory);
-  const createStoryMutation = useMutation("story", createStory);
-  const isMutating = useIsMutating(["story"]);
-  const originalStoryQuery = useQuery(
-    ["story", originalStoryId],
-    () => (originalStoryId ? fetchStory({ storyId: originalStoryId }) : null),
-    {
-      refetchOnWindowFocus: false,
-      enabled: isEditMode,
-      onSuccess: (data) => {
-        if (data) {
-          setCanLeave(false);
-          const { title, contentHTML } = data;
-          setStoryTitle(title);
-          setDefaultHTML(contentHTML);
-        }
-      },
-    }
-  );
+  const [storyTitle, setStoryTitle] = useState(originalStory?.title);
+  const [isLoading, setIsLoading] = useState(false);
   const wysiwygRef = useRef<WysiwygRef>(null);
   usePreventLeave(!canLeave);
   const handleSubmit = () => {
@@ -54,58 +34,50 @@ export default function StoryEditor({ originalStoryId }: Props) {
         alert("내용을 입력해주세요");
         return false;
       }
-      if (isEditMode && originalStoryId) {
-        editStoryMutation.mutate(
-          {
-            storyId: originalStoryId,
-            title: storyTitle,
-            contentHTML: context.contentHTML,
-          },
-          {
-            onSuccess: () => {
-              setCanLeave(true);
-              setTimeout(() => navigate(`/story/${originalStoryId}`), 50);
-            },
-          }
-        );
+      if (isEditMode) {
+        setIsLoading(true);
+        editStory({
+          storyId: originalStory.storyId,
+          title: storyTitle,
+          contentHTML: context.contentHTML,
+        }).then(() => {
+          setCanLeave(true);
+          setTimeout(() => navigate(`/story/${originalStory.storyId}`), 50);
+        });
       } else {
-        createStoryMutation.mutate(
-          { title: storyTitle, contentHTML: context.contentHTML },
-          {
-            onSuccess: (newStoryId) => {
-              setCanLeave(true);
-              setTimeout(() => navigate(`/story/${newStoryId}`), 50);
-            },
-          }
-        );
+        setIsLoading(true);
+        createStory({
+          title: storyTitle,
+          contentHTML: context.contentHTML,
+        }).then((newStoryId) => {
+          setCanLeave(true);
+          setTimeout(() => navigate(`/story/${newStoryId}`), 50);
+        });
       }
     }
   };
-  if (originalStoryQuery.isFetching || isMutating)
+  if (isLoading) {
     return (
       <FlexBox justifyContent="center">
         <Spin />
       </FlexBox>
     );
-  if (originalStoryQuery.data || !isEditMode) {
-    return (
-      <Space direction="vertical" style={{ width: "100%" }}>
-        <FlexBox gap={10}>
-          <Input
-            value={storyTitle}
-            onChange={({ target: { value } }) => setStoryTitle(value)}
-            size="large"
-            placeholder="제목을 입력하세요"
-            maxLength={70}
-          />
-          <Button size="large" type="primary" onClick={handleSubmit}>
-            {originalStoryId ? "수정" : "등록"}
-          </Button>
-        </FlexBox>
-        <Wysiwyg defaultHTML={defaultHTML} ref={wysiwygRef} />
-      </Space>
-    );
-  } else {
-    return <Result status="error" title="존재하지 않는 스토리 ID" />;
   }
+  return (
+    <Space direction="vertical" style={{ width: "100%" }}>
+      <FlexBox gap={10}>
+        <Input
+          value={storyTitle}
+          onChange={({ target: { value } }) => setStoryTitle(value)}
+          size="large"
+          placeholder="제목을 입력하세요"
+          maxLength={70}
+        />
+        <Button size="large" type="primary" onClick={handleSubmit}>
+          {originalStory ? "수정" : "등록"}
+        </Button>
+      </FlexBox>
+      <Wysiwyg defaultHTML={defaultHTML} ref={wysiwygRef} />
+    </Space>
+  );
 }
