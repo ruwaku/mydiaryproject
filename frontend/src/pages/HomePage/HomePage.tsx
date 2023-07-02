@@ -4,10 +4,9 @@ import FlexBox from "components/FlexBox/FlexBox";
 import LoginFallback from "components/LoginFallback/LoginFallback";
 import useAuthSession from "hooks/useAuthSession";
 import Typography from "antd/es/typography";
-import Divider from "antd/es/divider";
 import Clock from "components/Clock/Clock";
 import RemixIcon from "components/RemixIcon/RemixIcon";
-import DailyAssistant from "components/DailyAssistant/DailyAssistant";
+import dayjs from "dayjs";
 
 export default function HomePage() {
   const authSession = useAuthSession();
@@ -29,11 +28,15 @@ export default function HomePage() {
             <Typography.Text>
               <RemixIcon name="time" />{" "}
               <span>
-                <Clock format="YYYY년 MM월 DD일 (dd), hh시 mm분 ss초" interval={1000} />
+                <Clock
+                  date={dayjs()}
+                  format="YYYY년 MM월 DD일 (dd), hh시 mm분 ss초"
+                  interval={1000}
+                />
               </span>
             </Typography.Text>
-            <Divider />
-            <DailyAssistant />
+            {/* <Divider /> */}
+            {/* <DailyAssistant /> */}
           </FlexBox>
         </FlexBox>
       </FlexBox>

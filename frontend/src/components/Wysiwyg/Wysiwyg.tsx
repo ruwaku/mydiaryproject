@@ -1,7 +1,7 @@
-import { ContentState, EditorState, convertToRaw } from "draft-js";
+import { ContentState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
-import uploadPersonalImage from "lib/firebase/apis/uploadPersonalImage";
+import uploadPersonalImage from "apis/uploadPersonalImage";
 import { forwardRef, useImperativeHandle, useMemo } from "react";
 import { Editor, EditorProps, RawDraftContentState } from "react-draft-wysiwyg";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";

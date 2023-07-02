@@ -2,9 +2,13 @@ import Button from "antd/es/button";
 import DatePicker from "antd/es/date-picker";
 import Segmented from "antd/es/segmented";
 import FlexBox from "components/FlexBox/FlexBox";
-import { StoryListFilter } from "lib/firebase/apis/fetchStories";
+import { StoryListFilter } from "apis/fetchStories";
 import { useEffect, useMemo, useReducer } from "react";
 import debounce from "utils/debounce";
+
+const initialFilter: StoryListFilter = {
+  orderBy: "최신순",
+};
 
 type ReducerActions =
   | { type: "dateRange"; payload: StoryListFilter["dateRange"] }
@@ -17,7 +21,7 @@ const reducer = (state: StoryListFilter, action: ReducerActions): StoryListFilte
     case "orderBy":
       return { ...state, [action.type]: action.payload };
     case "RESET":
-      return { orderBy: "최신순" };
+      return initialFilter;
     default:
       return state;
   }
@@ -29,9 +33,8 @@ interface Props {
 export default function StoryListFilterControl({ onChange }: Props) {
   const debounceDelay = 0;
   const onChangeDebounced = useMemo(() => debounce(onChange, debounceDelay), [onChange]);
-  const [filter, updateFilter] = useReducer(reducer, {});
+  const [filter, updateFilter] = useReducer(reducer, initialFilter);
   useEffect(() => {
-    console.log(filter);
     onChangeDebounced?.(filter);
   }, [filter, onChangeDebounced]);
   return (

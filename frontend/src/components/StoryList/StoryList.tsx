@@ -1,7 +1,7 @@
 import List from "antd/es/list";
 import Skeleton from "antd/es/skeleton";
 import Space from "antd/es/space";
-import fetchStories, { StoryListFilter } from "lib/firebase/apis/fetchStories";
+import fetchStories, { StoryListFilter } from "apis/fetchStories";
 import { useQuery } from "react-query";
 import { atom, useRecoilState } from "recoil";
 import StoryListFilterControl from "./StoryListFilterControl";
