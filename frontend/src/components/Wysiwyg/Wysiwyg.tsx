@@ -1,4 +1,4 @@
-import { ContentState, convertToRaw } from "draft-js";
+import { ContentBlock, ContentState, convertToRaw } from "draft-js";
 import draftToHtml from "draftjs-to-html";
 import htmlToDraft from "html-to-draftjs";
 import uploadPersonalImage from "apis/uploadPersonalImage";
@@ -40,6 +40,20 @@ const ForwardedWysiwyg = forwardRef<WysiwygRef, EditorProps & WysiwygProps>(
         locale="ko"
         onContentStateChange={handleContentStateChange}
         defaultContentState={defaultContentState}
+        customBlockRenderFunc={(contentBlock) => {
+          // 한국어/중국어 입력하면 오류 나는 문제 해결
+          // https://github.com/jpuri/react-draft-wysiwyg/issues/979#issuecomment-672142998
+          const type = contentBlock.getType();
+          if (type === "atomic") {
+            return {
+              component: MediaComponent,
+              editable: false,
+              props: {
+                foo: "bar",
+              },
+            };
+          }
+        }}
         editorStyle={{ background: "#fff" }}
         toolbar={{
           image: { uploadCallback: handleImageUpload, previewImage: true },
@@ -49,5 +63,24 @@ const ForwardedWysiwyg = forwardRef<WysiwygRef, EditorProps & WysiwygProps>(
     );
   }
 );
+
+interface MediaComponentProps {
+  block: ContentBlock;
+  contentState: ContentState;
+}
+function MediaComponent({ block, contentState }: MediaComponentProps) {
+  const data = contentState.getEntity(block.getEntityAt(0)).getData();
+  const hackHTML = " "; // 1 space
+  return (
+    <div>
+      {hackHTML}
+      <img
+        src={data.src}
+        alt={data.alt || ""}
+        style={{ height: data.height || "auto", width: data.width || "auto" }}
+      />
+    </div>
+  );
+}
 
 export default ForwardedWysiwyg;
