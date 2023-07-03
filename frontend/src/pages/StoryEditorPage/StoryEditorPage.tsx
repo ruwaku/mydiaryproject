@@ -6,6 +6,7 @@ import fetchStory from "apis/fetchStory";
 import { useMemo } from "react";
 import { useQuery } from "react-query";
 import { useSearchParams } from "react-router-dom";
+import Typography from "antd/es/typography";
 
 export default function StoryEditorPage() {
   const [searchParams] = useSearchParams();
@@ -18,11 +19,12 @@ export default function StoryEditorPage() {
       enabled: !!originalStoryId,
     }
   );
+
   if (originalStoryId) {
     if (originalStoryQuery.isFetching)
       return (
-        <FlexBox justifyContent="center">
-          <Spin />
+        <FlexBox justifyContent="center" alignItems="center" style={{ padding: "3rem 0" }}>
+          <Spin size="large" />
         </FlexBox>
       );
     if (originalStoryQuery.data) return <StoryEditor originalStory={originalStoryQuery.data} />;

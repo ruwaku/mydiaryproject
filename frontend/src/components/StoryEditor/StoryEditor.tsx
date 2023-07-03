@@ -58,8 +58,8 @@ export default function StoryEditor({ originalStory }: Props) {
   };
   if (isLoading) {
     return (
-      <FlexBox justifyContent="center">
-        <Spin />
+      <FlexBox justifyContent="center" alignItems="center" style={{ padding: "3rem 0" }}>
+        <Spin size="large" />
       </FlexBox>
     );
   }

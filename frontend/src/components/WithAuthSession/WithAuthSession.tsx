@@ -14,8 +14,8 @@ export default function WithAuthSession({ element }: Props) {
   switch (authSession.status) {
     case "pending":
       return (
-        <FlexBox justifyContent="center">
-          <Spin />
+        <FlexBox justifyContent="center" alignItems="center" style={{ padding: "3rem 0" }}>
+          <Spin size="large" />
         </FlexBox>
       );
     case "unauthenticated":
