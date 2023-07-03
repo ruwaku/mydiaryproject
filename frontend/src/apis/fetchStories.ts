@@ -2,16 +2,20 @@ import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
 import {
   QueryConstraint,
+  QueryDocumentSnapshot,
   Timestamp,
   collection,
+  getCountFromServer,
   getDocs,
+  limit,
   orderBy,
   query,
+  startAfter,
   where,
 } from "firebase/firestore";
-import { fbAuthClient, fbFirestoreClient } from "../lib/firebase";
-import { StoryData } from "types/story";
 import { ApiError } from "types/error";
+import { StoryData } from "types/story";
+import { fbAuthClient, fbFirestoreClient } from "../lib/firebase";
 dayjs.extend(utc);
 
 type DateOrder = "최신순" | "오래된순";
@@ -21,15 +25,17 @@ export interface StoryListFilter {
   text?: string;
   orderBy?: DateOrder;
   dateRange?: DateRange;
-  cursor?: number;
-  itemCount?: number;
 }
-/**
- *
- * 스토리 목록 가져오기
- * @param filter 조건 필터
- */
-export default async function fetchStories(filter: StoryListFilter): Promise<StoryData[]> {
+interface PaginationListData<T = any> {
+  results: T;
+  total: number;
+  lastDoc: QueryDocumentSnapshot<any>;
+}
+/** 스토리 목록 가져오기 */
+export default async function fetchStories(
+  filter: StoryListFilter,
+  pagination?: { lastDoc?: PaginationListData["lastDoc"]; pageSize: number }
+): Promise<PaginationListData<StoryData[]> | null> {
   const user = fbAuthClient.currentUser;
   if (!user) throw new ApiError("AUTH_NOT_LOGGED_IN");
 
@@ -45,14 +51,22 @@ export default async function fetchStories(filter: StoryListFilter): Promise<Sto
     );
   if (filter.orderBy)
     filterQueries.push(orderBy("createdAt", filter.orderBy === "최신순" ? "desc" : "asc"));
-
-  console.log(filterQueries);
-  const result = await getDocs(
-    query(collection(fbFirestoreClient, `/users/${user.uid}/stories`), ...filterQueries)
-  );
-
-  if (result.empty) {
-    return [];
+  if (pagination) {
+    if (pagination.lastDoc) filterQueries.push(startAfter(pagination.lastDoc));
+    if (pagination.pageSize) filterQueries.push(limit(pagination.pageSize));
   }
-  return result.docs.map((doc) => ({ ...(doc.data() as StoryData), storyId: doc.id }));
+
+  const stories = collection(fbFirestoreClient, `/users/${user.uid}/stories`);
+  const data = await getDocs(query(stories, ...filterQueries));
+  const storiesTotal = (await getCountFromServer(stories)).data().count;
+
+  if (data.empty) return null;
+
+  const result = data.docs.map((doc) => ({ ...(doc.data() as StoryData), storyId: doc.id }));
+
+  return {
+    results: result,
+    total: storiesTotal,
+    lastDoc: data.docs[data.docs.length - 1],
+  };
 }
