@@ -40,6 +40,7 @@ const ForwardedWysiwyg = forwardRef<WysiwygRef, EditorProps & WysiwygProps>(
         locale="ko"
         onContentStateChange={handleContentStateChange}
         defaultContentState={defaultContentState}
+        editorStyle={{ background: "#fff" }}
         toolbar={{
           image: { uploadCallback: handleImageUpload, previewImage: true },
         }}

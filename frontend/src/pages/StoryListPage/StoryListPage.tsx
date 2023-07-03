@@ -1,6 +1,7 @@
 import Button from "antd/es/button";
 import Space from "antd/es/space";
 import Typography from "antd/es/typography";
+import FlexBox from "components/FlexBox/FlexBox";
 import RemixIcon from "components/RemixIcon/RemixIcon";
 import StoryList from "components/StoryList/StoryList";
 import { Link } from "react-router-dom";
@@ -8,18 +9,15 @@ import { Link } from "react-router-dom";
 export default function StoryListPage() {
   return (
     <Space direction="vertical" size="large" style={{ width: "100%" }}>
-      <Space>
-        <Typography.Title style={{ margin: 0 }}>Story</Typography.Title>
+      <FlexBox justifyContent="space-between" alignItems="center">
+        <Typography.Title style={{ margin: 0 }}>Stories</Typography.Title>
         <Link to="/story/editor">
-          <Button
-            shape="circle"
-            size="large"
-            style={{ width: "2rem", height: "2rem", display: "block" }}
-          >
-            <RemixIcon name="add" fontSize="1.5rem" />
+          <Button size="large" type="primary" style={{ display: "block", height: "auto" }}>
+            <RemixIcon name="add" />
+            <span>새 일기 쓰기</span>
           </Button>
         </Link>
-      </Space>
+      </FlexBox>
       <StoryList />
     </Space>
   );
