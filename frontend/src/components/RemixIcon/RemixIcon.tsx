@@ -11,7 +11,7 @@ export default function RemixIcon({ name, suffix, fontSize, style, ...props }: P
   return (
     <i
       className={`ri-${name}-${suffix ?? "line"}`}
-      style={{ verticalAlign: "middle", fontSize, ...style }}
+      style={{ verticalAlign: "-3px", fontSize, ...style }}
     />
   );
   // return (

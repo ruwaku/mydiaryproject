@@ -1,11 +1,15 @@
 import Button from "antd/es/button";
+import DatePicker from "antd/es/date-picker";
 import Input from "antd/es/input";
 import Space from "antd/es/space";
 import Spin from "antd/es/spin";
 import createStory from "apis/createStory";
 import editStory from "apis/editStory";
 import FlexBox from "components/FlexBox/FlexBox";
+import RemixIcon from "components/RemixIcon/RemixIcon";
 import Wysiwyg, { WysiwygRef } from "components/Wysiwyg/Wysiwyg";
+import dayjs, { Dayjs } from "dayjs";
+import { Timestamp } from "firebase/firestore";
 import usePreventLeave from "hooks/usePreventLeave";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +24,7 @@ export default function StoryEditor({ originalStory }: Props) {
   const defaultHTML = originalStory?.contentHTML;
   const [canLeave, setCanLeave] = useState(false);
   const [storyTitle, setStoryTitle] = useState(originalStory?.title);
+  const [storyDate, setStoryDate] = useState<Dayjs>(dayjs());
   const [isLoading, setIsLoading] = useState(false);
   const wysiwygRef = useRef<WysiwygRef>(null);
   usePreventLeave(!canLeave);
@@ -38,6 +43,7 @@ export default function StoryEditor({ originalStory }: Props) {
         setIsLoading(true);
         editStory({
           storyId: originalStory.storyId,
+          storyDate: Timestamp.fromDate(storyDate.toDate()),
           title: storyTitle,
           contentHTML: context.contentHTML,
         }).then(() => {
@@ -47,6 +53,7 @@ export default function StoryEditor({ originalStory }: Props) {
       } else {
         setIsLoading(true);
         createStory({
+          storyDate: Timestamp.fromDate(storyDate.toDate()),
           title: storyTitle,
           contentHTML: context.contentHTML,
         }).then((newStoryId) => {
@@ -66,6 +73,13 @@ export default function StoryEditor({ originalStory }: Props) {
   return (
     <Space direction="vertical" style={{ width: "100%" }}>
       <FlexBox gap={10}>
+        <DatePicker
+          placeholder="일기 날짜"
+          value={storyDate}
+          showTime={false}
+          onChange={(date) => date && setStoryDate(date)}
+          allowClear={false}
+        />
         <Input
           value={storyTitle}
           onChange={({ target: { value } }) => setStoryTitle(value)}
@@ -73,11 +87,17 @@ export default function StoryEditor({ originalStory }: Props) {
           placeholder="제목을 입력하세요"
           maxLength={70}
         />
-        <Button size="large" type="primary" onClick={handleSubmit}>
-          {originalStory ? "수정" : "등록"}
-        </Button>
       </FlexBox>
       <Wysiwyg defaultHTML={defaultHTML} ref={wysiwygRef} />
+      <Button
+        size="large"
+        type="primary"
+        onClick={handleSubmit}
+        style={{ position: "absolute", top: "calc(100% + 1rem)", right: "1rem" }}
+      >
+        <RemixIcon name="check" style={{ marginRight: 5 }} />
+        {originalStory ? "수정 끝" : "작성 끝"}
+      </Button>
     </Space>
   );
 }

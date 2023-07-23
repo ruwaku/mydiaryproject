@@ -9,6 +9,7 @@ import RemixIcon from "components/RemixIcon/RemixIcon";
 import StoryTimestamp from "components/StoryTimestamp/StoryTimestamp";
 import { useNavigate } from "react-router-dom";
 import { StoryData } from "types/story";
+import { useMemo } from "react";
 
 interface Props {
   story: StoryData;
@@ -42,12 +43,17 @@ export default function StoryViewer({ story }: Props) {
       },
     },
   ];
+  const contentHTML = useMemo(() => {
+    const dom = new DOMParser().parseFromString(story.contentHTML, "text/html");
+    Array.from(dom.getElementsByTagName("img")).forEach((img) => (img.style.maxWidth = "100%"));
+    return dom.body.innerHTML;
+  }, [story.contentHTML]);
   return (
     <div>
       {contextHolder}
       <Typography.Title level={2}>{story.title}</Typography.Title>
       <Typography.Paragraph>
-        <StoryTimestamp createdAt={story.createdAt.toDate()} updatedAt={story.updatedAt.toDate()} />
+        <StoryTimestamp storyDate={story.storyDate.toDate()} updatedAt={story.updatedAt.toDate()} />
       </Typography.Paragraph>
       <Dropdown
         trigger={["click"]}
@@ -71,7 +77,7 @@ export default function StoryViewer({ story }: Props) {
       </Dropdown>
       <Divider />
       <Typography.Paragraph style={{ overflowX: "auto" }}>
-        <div dangerouslySetInnerHTML={{ __html: story.contentHTML }} />
+        <div dangerouslySetInnerHTML={{ __html: contentHTML }} />
       </Typography.Paragraph>
     </div>
   );

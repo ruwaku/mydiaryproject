@@ -1,6 +1,5 @@
 import Typography from "antd/es/typography";
 import List from "antd/es/list";
-import RemixIcon from "components/RemixIcon/RemixIcon";
 import { htmlToText } from "html-to-text";
 import { Link } from "react-router-dom";
 import { StoryData } from "types/story";
@@ -16,7 +15,7 @@ interface Props {
 export default function StoryListItem({ story }: Props) {
   const { token: antdToken } = theme.useToken();
   const { storyId, title } = story;
-  const createdAt = story.createdAt.toDate();
+  const storyDate = story.storyDate.toDate();
   const updatedAt = story.updatedAt.toDate();
   const descMaxLength = 200;
   const firstImgSrc = story.contentHTML.match(imgSrcRegExp)?.[1];
@@ -60,8 +59,7 @@ export default function StoryListItem({ story }: Props) {
         description={
           <>
             <Typography.Text type="secondary">
-              <RemixIcon name="time" />
-              <StoryTimestamp createdAt={createdAt} updatedAt={updatedAt} />
+              <StoryTimestamp storyDate={storyDate} updatedAt={updatedAt} />
             </Typography.Text>
           </>
         }

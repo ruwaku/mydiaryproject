@@ -32,7 +32,7 @@ function NavItemIcon({ name, match }: { name: string; match: string }) {
       name={name}
       suffix={match === pathname ? "fill" : "line"}
       fontSize="1rem"
-      style={{ marginRight: 4, marginTop: -2, lineHeight: 0 }}
+      style={{ marginRight: 7, verticalAlign: "-5px" }}
     />
   );
 }

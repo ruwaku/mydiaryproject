@@ -18,27 +18,28 @@ const atom_filter = atom<StoryListFilter>({
   key: "storyListFilter",
   default: {},
 });
-const pageSize: number = 3;
+const pageSize: number = 10;
 
 export default function StoryList() {
   const { token: antdToken } = theme.useToken();
   const [filter, setFilter] = useRecoilState<StoryListFilter>(atom_filter);
-  const [total, setTotal] = useState<number>();
+  const [total, setTotal] = useState<number>(0);
   const { data, isLoading, isFetching, fetchNextPage } = useInfiniteQuery(
     ["storyList", filter],
     ({ pageParam }) => fetchStories(filter, { pageSize, lastDoc: pageParam?.lastDoc }),
     {
       refetchOnWindowFocus: false,
-      getNextPageParam: (lastPage, pages) => ({ pageNo: pages.length, lastDoc: lastPage?.lastDoc }),
-      onSuccess: (data) => setTotal(data.pages.at(-1)?.total),
+      getNextPageParam: (lastPage, pages) => {
+        if (lastPage.results.length > 0)
+          return { pageNo: pages.length, lastDoc: lastPage?.lastDoc };
+      },
+      onSuccess: (data) => {
+        const total = data.pages.at(-1)?.total;
+        if (total) setTotal(total);
+      },
     }
   );
-  const isPageEnded = useMemo(() => {
-    if (data?.pages && data.pages.length > 0) {
-      return total && total <= data.pages.length * pageSize;
-    }
-    return undefined;
-  }, [total, data?.pages]);
+  const isPageEnded = useMemo(() => data && data.pages.length * pageSize >= total, [total, data]);
   return (
     <Space size="large" direction="vertical" style={{ width: "100%" }}>
       <StoryListFilterControl onChange={setFilter} />
@@ -46,27 +47,33 @@ export default function StoryList() {
         <List
           dataSource={data.pages}
           itemLayout="vertical"
-          renderItem={(page, i) => (
-            <List.Item>
-              <Affix offsetTop={0}>
-                <div
-                  style={{
-                    background: antdToken.colorBgContainer,
-                    padding: "0.5rem",
-                    borderBottom: `1px solid ${antdToken.colorBorderSecondary}`,
-                  }}
-                >
-                  Page {i + 1}
-                </div>
-              </Affix>
-              <List
-                itemLayout="vertical"
-                size="large"
-                dataSource={page!.results}
-                renderItem={(story) => <StoryListItem story={story} />}
-              />
-            </List.Item>
-          )}
+          renderItem={(page, i) => {
+            if (page.results.length > 0) {
+              return (
+                <List.Item>
+                  <Affix offsetTop={0}>
+                    <div
+                      style={{
+                        background: antdToken.colorBgContainer,
+                        padding: "0.5rem",
+                        borderBottom: `1px solid ${antdToken.colorBorderSecondary}`,
+                      }}
+                    >
+                      Page {i + 1}
+                    </div>
+                  </Affix>
+                  <List
+                    itemLayout="vertical"
+                    size="large"
+                    dataSource={page?.results}
+                    renderItem={(story) => <StoryListItem story={story} />}
+                  />
+                </List.Item>
+              );
+            } else {
+              return null;
+            }
+          }}
         />
       )}
       {isLoading || isFetching ? (

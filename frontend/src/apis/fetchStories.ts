@@ -35,7 +35,7 @@ interface PaginationListData<T = any> {
 export default async function fetchStories(
   filter: StoryListFilter,
   pagination?: { lastDoc?: PaginationListData["lastDoc"]; pageSize: number }
-): Promise<PaginationListData<StoryData[]> | null> {
+): Promise<PaginationListData<StoryData[]>> {
   const user = fbAuthClient.currentUser;
   if (!user) throw new ApiError("AUTH_NOT_LOGGED_IN");
 
@@ -43,14 +43,14 @@ export default async function fetchStories(
 
   if (filter.dateRange?.[0])
     filterQueries.push(
-      where("createdAt", ">=", Timestamp.fromDate(filter.dateRange[0].utc().toDate()))
+      where("storyDate", ">=", Timestamp.fromDate(filter.dateRange[0].utc().toDate()))
     );
   if (filter.dateRange?.[1])
     filterQueries.push(
-      where("createdAt", "<", Timestamp.fromDate(filter.dateRange[1].utc().add(1, "day").toDate()))
+      where("storyDate", "<", Timestamp.fromDate(filter.dateRange[1].utc().add(1, "day").toDate()))
     );
   if (filter.orderBy)
-    filterQueries.push(orderBy("createdAt", filter.orderBy === "최신순" ? "desc" : "asc"));
+    filterQueries.push(orderBy("storyDate", filter.orderBy === "최신순" ? "desc" : "asc"));
   if (pagination) {
     if (pagination.lastDoc) filterQueries.push(startAfter(pagination.lastDoc));
     if (pagination.pageSize) filterQueries.push(limit(pagination.pageSize));
@@ -60,12 +60,10 @@ export default async function fetchStories(
   const data = await getDocs(query(stories, ...filterQueries));
   const storiesTotal = (await getCountFromServer(stories)).data().count;
 
-  if (data.empty) return null;
-
-  const result = data.docs.map((doc) => ({ ...(doc.data() as StoryData), storyId: doc.id }));
-
   return {
-    results: result,
+    results: data.empty
+      ? []
+      : data.docs.map((doc) => ({ ...(doc.data() as StoryData), storyId: doc.id })),
     total: storiesTotal,
     lastDoc: data.docs[data.docs.length - 1],
   };
