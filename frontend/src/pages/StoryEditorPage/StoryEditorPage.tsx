@@ -6,10 +6,11 @@ import fetchStory from "apis/fetchStory";
 import { useMemo } from "react";
 import { useQuery } from "react-query";
 import { useSearchParams } from "react-router-dom";
-import Typography from "antd/es/typography";
+import dayjs from "dayjs";
 
 export default function StoryEditorPage() {
   const [searchParams] = useSearchParams();
+  const initialDate = useMemo(() => searchParams.get("date"), [searchParams]);
   const originalStoryId = useMemo(() => searchParams.get("id"), [searchParams]);
   const originalStoryQuery = useQuery(
     ["story", originalStoryId],
@@ -31,5 +32,5 @@ export default function StoryEditorPage() {
     if (originalStoryQuery.isError)
       return <Result status="error" title="스토리를 찾을 수 없습니다" />;
   }
-  return <StoryEditor />;
+  return <StoryEditor initialDate={initialDate ? dayjs(initialDate) : undefined} />;
 }

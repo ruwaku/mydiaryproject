@@ -17,14 +17,15 @@ import { StoryData } from "types/story";
 
 interface Props {
   originalStory?: StoryData;
+  initialDate?: Dayjs;
 }
-export default function StoryEditor({ originalStory }: Props) {
+export default function StoryEditor({ originalStory, initialDate }: Props) {
   const navigate = useNavigate();
   const isEditMode = !!originalStory;
   const defaultHTML = originalStory?.contentHTML;
   const [canLeave, setCanLeave] = useState(false);
   const [storyTitle, setStoryTitle] = useState(originalStory?.title);
-  const [storyDate, setStoryDate] = useState<Dayjs>(dayjs());
+  const [storyDate, setStoryDate] = useState<Dayjs>(initialDate ?? dayjs());
   const [isLoading, setIsLoading] = useState(false);
   const wysiwygRef = useRef<WysiwygRef>(null);
   usePreventLeave(!canLeave);

@@ -1,12 +1,12 @@
-"use client";
 import Avatar from "antd/es/avatar";
-import FlexBox from "components/FlexBox/FlexBox";
-import LoginFallback from "components/LoginFallback/LoginFallback";
-import useAuthSession from "hooks/useAuthSession";
+import Divider from "antd/es/divider";
 import Typography from "antd/es/typography";
 import Clock from "components/Clock/Clock";
+import DiaryCalendar from "components/DiaryCalendar/DiaryCalendar";
+import FlexBox from "components/FlexBox/FlexBox";
 import RemixIcon from "components/RemixIcon/RemixIcon";
 import dayjs from "dayjs";
+import useAuthSession from "hooks/useAuthSession";
 
 export default function HomePage() {
   const authSession = useAuthSession();
@@ -28,19 +28,14 @@ export default function HomePage() {
             <Typography.Text>
               <RemixIcon name="time" />{" "}
               <span>
-                <Clock
-                  date={dayjs()}
-                  format="YYYY년 MM월 DD일 (dd), hh시 mm분 ss초"
-                  interval={1000}
-                />
+                <Clock date={dayjs()} interval={1000} />
               </span>
             </Typography.Text>
-            {/* <Divider /> */}
-            {/* <DailyAssistant /> */}
+            <Divider />
+            <DiaryCalendar />
           </FlexBox>
         </FlexBox>
       </FlexBox>
     );
-  if (authSession.status === "unauthenticated") return <LoginFallback />;
   return null;
 }

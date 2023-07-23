@@ -1,6 +1,6 @@
 import type { Property as CSSProp } from "csstype";
 
-interface Props {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
   direction?: CSSProp.FlexDirection;
   alignItems?: CSSProp.AlignItems;
   justifyContent?: CSSProp.JustifyContent;

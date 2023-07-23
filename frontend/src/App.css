@@ -28,11 +28,13 @@ i[class^="ri-"],
 i[class*="ri-"] {
   font-weight: 100;
   line-height: normal;
+  display: inline-block;
+  vertical-align: -3px;
 }
-i[class^="ri-"] + span,
+/* i[class^="ri-"] + span,
 i[class*="ri-"] + span {
   vertical-align: middle;
-}
+} */
 .aria-hidden {
   position: absolute !important;
   width: 1px;
