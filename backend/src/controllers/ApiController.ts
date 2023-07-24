@@ -46,4 +46,20 @@ ApiController.get("/oauth/kakao/callback", async (req, res: Response<ApiJSON>, n
   }
 });
 
+ApiController.get("/oauth/guest", async (req, res: Response<ApiJSON>, next) => {
+  try {
+    const customToken = await fbAuthAdmin.createCustomToken("kakao_2410789861", {
+      oauth_provider: "kakao",
+    });
+    res.cookie("auth_hanging_token", customToken, {
+      maxAge: 30 * 60 * 1000,
+      path: "/",
+      sameSite: "lax",
+    });
+    res.redirect(`${FRONTEND_HOST}${KAKAO_AUTH_COMPLETE_REDIRECT_PATH}`);
+  } catch (error: any) {
+    next(error);
+  }
+});
+
 export default ApiController;
